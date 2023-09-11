@@ -9,3 +9,7 @@ func (r *Repository) GetTestById(ctx context.Context, input GetTestByIdInput) (o
 	}
 	return
 }
+
+func (r *Repository) Register(ctx context.Context, input RegisterInput) (output RegisterOutput, err error) {
+	return
+}

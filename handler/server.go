@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/triardn/panganggo/repository"
+import (
+	"github.com/triardn/panganggo/repository"
+)
 
 type Server struct {
 	Repository repository.RepositoryInterface

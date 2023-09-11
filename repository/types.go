@@ -8,3 +8,9 @@ type GetTestByIdInput struct {
 type GetTestByIdOutput struct {
 	Name string
 }
+
+type RegisterInput struct {
+}
+
+type RegisterOutput struct {
+}

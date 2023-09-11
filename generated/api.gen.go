@@ -28,16 +28,79 @@ type HelloResponse struct {
 	Message string `json:"message"`
 }
 
+// LoginRequest defines model for LoginRequest.
+type LoginRequest struct {
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+// LoginResponse defines model for LoginResponse.
+type LoginResponse struct {
+	Id    int    `json:"id"`
+	Token string `json:"token"`
+}
+
+// RegisterRequest defines model for RegisterRequest.
+type RegisterRequest struct {
+	FullName    string `json:"full_name"`
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+// RegisterResponse defines model for RegisterResponse.
+type RegisterResponse struct {
+	Id int `json:"id"`
+}
+
+// UpdateUserRequest defines model for UpdateUserRequest.
+type UpdateUserRequest struct {
+	FullName    *string `json:"full_name,omitempty"`
+	PhoneNumber *string `json:"phone_number,omitempty"`
+}
+
+// UpdateUserResponse defines model for UpdateUserResponse.
+type UpdateUserResponse struct {
+	Message string `json:"message"`
+}
+
+// UserDetailResponse defines model for UserDetailResponse.
+type UserDetailResponse struct {
+	FullName    string `json:"full_name"`
+	Id          int    `json:"id"`
+	PhoneNumber string `json:"phone_number"`
+}
+
 // HelloParams defines parameters for Hello.
 type HelloParams struct {
 	Id int `form:"id" json:"id"`
 }
+
+// LoginJSONRequestBody defines body for Login for application/json ContentType.
+type LoginJSONRequestBody = LoginRequest
+
+// RegistrationJSONRequestBody defines body for Registration for application/json ContentType.
+type RegistrationJSONRequestBody = RegisterRequest
+
+// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
+type UpdateUserJSONRequestBody = UpdateUserRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// This is just a test endpoint to get you started. Please delete this endpoint.
 	// (GET /hello)
 	Hello(ctx echo.Context, params HelloParams) error
+	// Login endpoint.
+	// (POST /login)
+	Login(ctx echo.Context) error
+	// User Registration Endpoint.
+	// (POST /registration)
+	Registration(ctx echo.Context) error
+	// Update User Endpoint.
+	// (PUT /users)
+	UpdateUser(ctx echo.Context) error
+	// Get My Profile endpoint. Return User Data By ID.
+	// (GET /users/{id})
+	GetUserDetailByID(ctx echo.Context, id int) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -60,6 +123,49 @@ func (w *ServerInterfaceWrapper) Hello(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Hello(ctx, params)
+	return err
+}
+
+// Login converts echo context to params.
+func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.Login(ctx)
+	return err
+}
+
+// Registration converts echo context to params.
+func (w *ServerInterfaceWrapper) Registration(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.Registration(ctx)
+	return err
+}
+
+// UpdateUser converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateUser(ctx)
+	return err
+}
+
+// GetUserDetailByID converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUserDetailByID(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetUserDetailByID(ctx, id)
 	return err
 }
 
@@ -92,19 +198,29 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/hello", wrapper.Hello)
+	router.POST(baseURL+"/login", wrapper.Login)
+	router.POST(baseURL+"/registration", wrapper.Registration)
+	router.PUT(baseURL+"/users", wrapper.UpdateUser)
+	router.GET(baseURL+"/users/:id", wrapper.GetUserDetailByID)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7RSTY/TMBD9K9bAMWoK7Cl3JPYAQrCcVj2Y5DVx5djemUmlqsp/R+O20JU4wsmO52Xe",
-	"x8yZ+jyXnJBUqDuT9BNmX68fmTN/g5ScBPZQOBewBtTyDBE/1oKeCqgjUQ5ppHVtiPGyBMZA3fNv4K65",
-	"AfPPA3qltaFPiDH/Vw5DhrTP1iOGHlee5GdDfX58MhkaNNrnDwG77+Bj6EENHcEScqKO3m22m60hc0Hy",
-	"JVBHH+pTQ8XrVMW2k5mx2wi1w5x4DTk9DtRdrFY8+xkKFuqezxSs/csCPlFzUxUGurenvKC5TuYuipAU",
-	"I5jWdWfoS4ZVyfvt1o4+J0WqUnwpMfRVTHsQs3S+a/iWsaeO3rR/dqG9LkL7ekI1zgHScyh6ieYJoo6h",
-	"CycL6GH78M+4X2/gX7i/ZHX7vKShLoQs8+z5ZJqmIC6IOyyizjs1iUhDySGp0+xGqDvlxYl6Vgwb9zXC",
-	"C9yACIVT+/2G31yIBXy8zWzhSB1NqqVr25h7H6csSutu/RUAAP//x+wl0k8DAAA=",
+	"H4sIAAAAAAAC/+xWQU/jOhD+K5bfO1ZN34PL5ljKspWWFSpwQgiZeNqadWzjmbCKqvz3lZ2WNDRtxYpW",
+	"HPZEaMaeb77vy8wseGZzZw0YQp4uOGZzyEV8PPfe+gmgswYh/OC8deBJQXydA6KYxRdUOuApR/LKzHhV",
+	"9biH50J5kDy9ew28760C7eMTZMSrHv8GWtsD5/huZ8pM4LkApM0UTiD+sl525OhxN7cGHkyRP4LfD6IV",
+	"3Wtu3gFqW+FqHY8yBDPw4RjZn2D2I1GSr2K7kk9gppDAbyVlWmj9YEQO3awcjLIm7x76mgrex+AmT123",
+	"3zopCG7xzxnaS8LOnAf9HEKKEZBQenui3dVtM+f7pI8ebQm+fnwTeTivzNSGm7XKYAm8Rskvxzfx+1Ck",
+	"w7+hSHYN/kVl4eoX8Kis4Sn/rz/oD0KkdWCEUzzlJ/GnYDiax+qTeehK4WkGUfpAjSBlzVjytO5ZMd6L",
+	"HAg88vRuwVW4/rkAX/LeClWssSmafAG9ZYvtdOd9iK5FiUj+HwzCn8waAhOhCOe0yiKY5AmtaXp2ePrX",
+	"w5Sn/J+kaerJsqMn7VYb6ZSAmVeOampuAIl5oMKbQNDp4PTDcrdHSUfuH5bY1BZGRptgkefClwHTXCFT",
+	"yJ4KJCYYBYhgpLPKECPLZkCstAVDEp5A9tmVBoHAJGggYBSOr+L78e5Eh84bLW+xQ93YmJeqAdLQyvLD",
+	"aGhNoqr9QQRvVAeUvz1wOiS4LrIMEGvpB8eTfigke+Xkk9gukvXWOD7OnNoq2/0zWY86jI3eju8jO2lj",
+	"9v41004zxVm0bgt23jZWgXGGLLgrOgzVLAYHstPmtnNkQ3WsPvssdXI8Wb9a/6ikBMPOrIQ6/ZfjpT+z",
+	"ZqpVXIBapoqcseitLjslCyWrrSvMBVCzBg7L8WjLOhNWos+5zXRssZ/YMy3pLoDYZcmuvJ0qDc2UYZO4",
+	"e9WajgQJNizZeNSvEyD4l5U2hdc85XMilyaJtpnQ8zCLqvvqdwAAAP//AMDRYs8PAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
