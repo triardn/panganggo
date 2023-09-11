@@ -18,6 +18,17 @@ func (s *Server) Hello(ctx echo.Context, params generated.HelloParams) error {
 }
 
 func (s *Server) Registration(ctx echo.Context) error {
+	return nil
+}
 
+func (s *Server) Login(ctx echo.Context) error {
+	return nil
+}
+
+func (s *Server) GetUserDetailByID(ctx echo.Context, id int) error {
+	return nil
+}
+
+func (s *Server) UpdateUser(ctx echo.Context) error {
 	return nil
 }
