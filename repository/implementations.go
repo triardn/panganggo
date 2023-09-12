@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 func (r *Repository) GetTestById(ctx context.Context, input GetTestByIdInput) (output GetTestByIdOutput, err error) {
@@ -50,4 +51,43 @@ func (r *Repository) UpdateLoginCounter(ctx context.Context, input int) error {
 	}
 
 	return nil
+}
+
+func (r *Repository) CheckIfPhoneNumberExist(ctx context.Context, input string) (isExist bool, err error) {
+	var tempID int
+	err = r.Db.QueryRowContext(ctx, "SELECT id FROM users WHERE phone_number = $1", input).Scan(&tempID)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (r *Repository) UpdateProfile(ctx context.Context, input UpdateProfileInput) (success bool, err error) {
+	query := "UPDATE users SET"
+
+	if input.FullName != "" {
+		query = query + fmt.Sprintf(" full_name = %s", input.FullName)
+	}
+
+	if input.PhoneNumber != "" {
+		if input.FullName != "" {
+			query = query + fmt.Sprintf(", phone_number = %s", input.PhoneNumber)
+		} else {
+			query = query + fmt.Sprintf(" phone_number = %s", input.PhoneNumber)
+		}
+	}
+
+	fmt.Println(query)
+
+	err = r.Db.QueryRowContext(ctx, query).Err()
+	if err != nil {
+		return
+	}
+
+	return true, nil
 }

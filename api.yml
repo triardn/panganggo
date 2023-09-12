@@ -135,21 +135,21 @@ paths:
       security:
         - bearerAuth:
           - "users:w"
-      summary: Update User Endpoint.
-      operationId: updateUser
+      summary: Update Profile Endpoint.
+      operationId: updateProfile
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: '#/components/schemas/UpdateProfileRequest'
       responses:
         '200':
           description: Success
           content:
             application/json:    
               schema:
-                $ref: "#/components/schemas/UpdateUserResponse"
+                $ref: "#/components/schemas/UpdateProfileResponse"
         '403':
           description: Forbidden Code
           content:
@@ -236,14 +236,14 @@ components:
           type: string
         phone_number:
           type: string
-    UpdateUserRequest:
+    UpdateProfileRequest:
       type: object
       properties:
         phone_number:
           type: string
         full_name:
           type: string
-    UpdateUserResponse:
+    UpdateProfileResponse:
       type: object
       required:
         - message

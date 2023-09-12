@@ -4,11 +4,15 @@
 // interfaces using mockgen. See the Makefile for more information.
 package repository
 
-import "context"
+import (
+	"context"
+)
 
 type RepositoryInterface interface {
 	GetTestById(ctx context.Context, input GetTestByIdInput) (output GetTestByIdOutput, err error)
 	Register(ctx context.Context, input RegisterInput) (output RegisterOutput, err error)
 	GetUsersByPhoneNumber(ctx context.Context, userPhoneNumber string) (output GetUsersByPhoneNumberOutput, err error)
 	UpdateLoginCounter(ctx context.Context, input int) error
+	CheckIfPhoneNumberExist(ctx context.Context, input string) (isExist bool, err error)
+	UpdateProfile(ctx context.Context, input UpdateProfileInput) (success bool, err error)
 }

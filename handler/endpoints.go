@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/triardn/panganggo/commons"
 	"github.com/triardn/panganggo/generated"
+	"github.com/triardn/panganggo/repository"
 )
 
 // This is just a test endpoint to get you started. Please delete this endpoint.
@@ -71,8 +72,48 @@ func (s *Server) GetUserDetailByID(ctx echo.Context, id int) error {
 	return ctx.JSON(http.StatusOK, generated.UserDetailResponse{FullName: data.FullName, PhoneNumber: data.PhoneNumber})
 }
 
-func (s *Server) UpdateUser(ctx echo.Context) error {
-	return nil
+func (s *Server) UpdateProfile(ctx echo.Context) error {
+	ok, _ := validateToken(ctx, s.JWT)
+	if !ok {
+		return ctx.JSON(http.StatusForbidden, generated.ErrorResponse{Message: "Forbidden."})
+	}
+
+	updateProfileRequest := generated.UpdateProfileRequest{}
+	if err := ctx.Bind(&updateProfileRequest); err != nil {
+		return err
+	}
+
+	// validate phone number
+
+	// check if phone number is exist
+	isExist, err := s.Repository.CheckIfPhoneNumberExist(ctx.Request().Context(), *updateProfileRequest.PhoneNumber)
+	if err != nil {
+		// TODO: add log
+		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Terjadi kesalahan pada sistem. Silakan coba lagi."})
+	}
+
+	if isExist {
+		return ctx.JSON(http.StatusConflict, generated.ErrorResponse{Message: "Conflict."})
+	}
+
+	// update profile
+	payload := repository.UpdateProfileInput{}
+
+	if updateProfileRequest.FullName != nil {
+		payload.FullName = *updateProfileRequest.FullName
+	}
+
+	if updateProfileRequest.PhoneNumber != nil {
+		payload.PhoneNumber = *updateProfileRequest.PhoneNumber
+	}
+
+	_, err = s.Repository.UpdateProfile(ctx.Request().Context(), payload)
+	if err != nil {
+		// TODO: add log
+		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Gagal update profile. Silakan coba lagi."})
+	}
+
+	return ctx.JSON(http.StatusOK, generated.UpdateProfileResponse{Message: "Sukses update profile."})
 }
 
 func validateToken(ctx echo.Context, jwt commons.JWT) (isValid bool, data commons.UserData) {

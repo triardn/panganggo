@@ -56,14 +56,14 @@ type RegisterResponse struct {
 	Id int `json:"id"`
 }
 
-// UpdateUserRequest defines model for UpdateUserRequest.
-type UpdateUserRequest struct {
+// UpdateProfileRequest defines model for UpdateProfileRequest.
+type UpdateProfileRequest struct {
 	FullName    *string `json:"full_name,omitempty"`
 	PhoneNumber *string `json:"phone_number,omitempty"`
 }
 
-// UpdateUserResponse defines model for UpdateUserResponse.
-type UpdateUserResponse struct {
+// UpdateProfileResponse defines model for UpdateProfileResponse.
+type UpdateProfileResponse struct {
 	Message string `json:"message"`
 }
 
@@ -85,8 +85,8 @@ type LoginJSONRequestBody = LoginRequest
 // RegistrationJSONRequestBody defines body for Registration for application/json ContentType.
 type RegistrationJSONRequestBody = RegisterRequest
 
-// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = UpdateUserRequest
+// UpdateProfileJSONRequestBody defines body for UpdateProfile for application/json ContentType.
+type UpdateProfileJSONRequestBody = UpdateProfileRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -99,9 +99,9 @@ type ServerInterface interface {
 	// User Registration Endpoint.
 	// (POST /registration)
 	Registration(ctx echo.Context) error
-	// Update User Endpoint.
+	// Update Profile Endpoint.
 	// (PUT /users)
-	UpdateUser(ctx echo.Context) error
+	UpdateProfile(ctx echo.Context) error
 	// Get My Profile endpoint. Return User Data By ID.
 	// (GET /users/{id})
 	GetUserDetailByID(ctx echo.Context, id int) error
@@ -148,14 +148,14 @@ func (w *ServerInterfaceWrapper) Registration(ctx echo.Context) error {
 	return err
 }
 
-// UpdateUser converts echo context to params.
-func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
+// UpdateProfile converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateProfile(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{"users:w"})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.UpdateUser(ctx)
+	err = w.Handler.UpdateProfile(ctx)
 	return err
 }
 
@@ -208,7 +208,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/hello", wrapper.Hello)
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/registration", wrapper.Registration)
-	router.PUT(baseURL+"/users", wrapper.UpdateUser)
+	router.PUT(baseURL+"/users", wrapper.UpdateProfile)
 	router.GET(baseURL+"/users/:id", wrapper.GetUserDetailByID)
 
 }
@@ -216,21 +216,21 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xXUW/bNhD+K8Rtj4blrn2Z3pam7TKsQ+Ek2EMQFIx4tphJJHM8ptAM/feBlB3ZsRyj",
-	"RWz4YU+RpSPv43cf774soLC1swYNe8gX4IsSa5kePxBZmqJ31niMLxxZh8Qa0+cavZfz9IEbh5CDZ9Jm",
-	"Dm07AsKHoAkV5DdPgbejVaC9u8eCoR3B71hV9sA5/rRzbab4ENDzdgonvf9mSQ3kGIErrcGvJtR3SPtB",
-	"bESP+p1fALXr4HodjzaMc6S4jO0/aPYj0QpWsUPJpzjXnpF2kjILVfXVyBqHWTkYZX3ePfT1J/g+Brd5",
-	"Gtr92inJeO1/nKG9JLyY86DXIaY4R5a62p3o5dPtEuf3lX6j1usrt0G3I/BYBNLcXMb+1IG8Q0lIvwUu",
-	"+18fLdWSIYc//r6CUdfN4k7dV3jauWR20MaNtZnZuL7SBS656A4Ony+u0pXTXMWfkTdxifSoiwj5Eclr",
-	"ayCHN+PJeBIjrUMjnYYc3qZXUcNcJqxZGRtdfJpjUlNkW7K25kJB3rXBFE+yRkbykN8sQMftHwJSA6MV",
-	"qnS1ex6ZAi7PKQcFfxujuzonJL9MJvFPYQ2jSVCkc5UuEpjs3lvTj4H49DPhDHL4KevnRLYcEtlm9050",
-	"KvQFaccdNVfoWRByIBMJejd592q5N6fTQO6/LIuZDUZ1+gl1LamJmErthfbiPngWUnCEiEY5qw0LtmKO",
-	"LBobhGdJjGosvlQoPQqFFTIKjstX8eO0d1bFZp5ukfUD1U29flk19HxmVfNqNGwMt3bzjkVttAcs/+YM",
-	"GyjBZSgK9L4r/eR4pT+TSjxxciKyS2Q9Fw6lMdZJZbd+putRh5HRc0dwZCVtjfP/xfSimNIsWpeF+LAp",
-	"rODTDFmACwOC6r3GgeS0baCOLKgBN7VPUm+OV9ZrI7m0pP9F1eV+e7zcHy3daaXQiPdWYZf+1+Olf2/N",
-	"rNLPTF0yO+t27gaSgPNvcBsNzJrwU11F0v+Q5LOFVu1Om/UJuXe/Z83F+Q7LFW3baTquAfN+WroOJyPs",
-	"H9LXJ2TxuRFfyM50hf24FtNkYjvhnUuW4qwRF+fjDohHelwJKFC1/P8iz7LKFrIq41Bvb9v/AgAA///u",
-	"Yx8WaxEAAA==",
+	"H4sIAAAAAAAC/+xX32/bNhD+V4jbHg3LXfsyvS1N22VYh8JJsIcgKBjxbDGTSOZ4TKEZ+t8HUv6lRI7R",
+	"Ijb8sKfI0pH38buPd18WUNjaWYOGPeQL8EWJtUyPH4gsTdE7azzGF46sQ2KN6XON3st5+sCNQ8jBM2kz",
+	"h7YdAeFD0IQK8pt14O1oFWjv7rFgaEfwO1aVPXCOP+1cmyk+BPT8PIWT3n+zpAZyjMCV1uBXE+o7pP0g",
+	"etGjzc4vgNp1cL2NRxvGOVJcxvYfNPuRaAWr2KHkU5xrz0g7SZmFqvpqZI3DrByMsk3ePfRtTvB9DD7n",
+	"aWj3a6ck4xeyM13hj5K0l4d9aQ96Ka490jmy1NXuRC8fcJdEv08AvYpvr3wOuh2BxyKQ5uYydqkO5B1K",
+	"QvotcLn59dFSLRly+OPvKxh1PS3u1H2F9c4ls4M2bqzNzMb1lS5wyUV3cPh8cZUunuYq/oy8iUukR11E",
+	"yI9IXlsDObwZT8aTGGkdGuk05PA2vYpK5jJhzcrY7uLTHJOgItuStTUXCvKuGaZ4kjUykof8ZgE6bv8Q",
+	"kBoYrVClC77hkSng8pxyUPa3Mbqrc0Lyy2QS/xTWMJoERTpX6SKBye69NZthEJ9+JpxBDj9lm2mRLUdF",
+	"1u/hiU6FviDtuKPmCj0LQg5kIkHvJu9eLXd/Rg3k/suymNlgVKefUNeSmoip1F5oL+6DZyEFR4holLPa",
+	"sGAr5siisUF4lsSoxuJLhdKjUFgho+C4fBU/TntnVWzp6RZZP1Dd1PGXVUPPZ1Y1r0ZDb8S1/TsWtdEe",
+	"sPz9STZQgstQFOh9V/rJ8Up/JpVYc3IisktkPRUOpWHWSWW3fqbbUYeR0VNfcGQlPRvq/4vpRTGlWbQt",
+	"C/GhL6zg0wxZgAsDgurZjQMpatBJHVlWw7Zqn7beHK++10ZyaUn/i6rL/fZ4uT9autNKoRHvrcIu/a/H",
+	"S//emlmln7i75Hq2fd0NJCXn3+A2OpmtG5BKK5a1HZR/ttCq3Wm5PiFvnPBZc3G+w35FC3ea7mvAyJ+W",
+	"tMPJaPuHJPYJWXxu1hJbj24xTYZWpCZ8LlmKs0ZcnI87IB7pcSWgQNXyf408yypbyKqMA769bf8LAAD/",
+	"/1pb+c19EQAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

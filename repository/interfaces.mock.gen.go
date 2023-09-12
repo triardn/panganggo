@@ -78,3 +78,17 @@ func (mr *MockRepositoryInterfaceMockRecorder) Register(ctx, input interface{}) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockRepositoryInterface)(nil).Register), ctx, input)
 }
+
+// UpdateLoginCounter mocks base method.
+func (m *MockRepositoryInterface) UpdateLoginCounter(ctx context.Context, input int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLoginCounter", ctx, input)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateLoginCounter indicates an expected call of UpdateLoginCounter.
+func (mr *MockRepositoryInterfaceMockRecorder) UpdateLoginCounter(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLoginCounter", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateLoginCounter), ctx, input)
+}

@@ -30,3 +30,12 @@ type LoginHistoriesModel struct {
 	UsersID int `json:"users_id"`
 	Counter int `json:"counter"`
 }
+
+type UpdateProfileInput struct {
+	FullName    string
+	PhoneNumber string
+}
+
+type UpdateProfileOutput struct {
+	Success bool
+}
