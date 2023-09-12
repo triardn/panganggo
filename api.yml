@@ -100,6 +100,9 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
   /users/{id}:
     get:
+      security:
+        - bearerAuth:
+          - "users:w"
       summary: Get My Profile endpoint. Return User Data By ID.
       operationId: getUserDetailByID
       parameters:
@@ -121,8 +124,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /users:
     put:
+      security:
+        - bearerAuth:
+          - "users:w"
       summary: Update User Endpoint.
       operationId: updateUser
       requestBody:
@@ -146,6 +158,12 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         '409':
           description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unathorized
           content:
             application/json:
               schema:
@@ -209,7 +227,6 @@ components:
     UserDetailResponse:
       type: object
       required:
-        - id
         - full_name
         - phone_number
       properties:
@@ -233,3 +250,10 @@ components:
       properties:
         message:
           type: string
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+# security:
+#   - BearerAuth: [ ]

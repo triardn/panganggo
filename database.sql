@@ -12,11 +12,15 @@ CREATE TABLE users (
   full_name VARCHAR ( 60 ) NOT NULL,
   phone_number VARCHAR ( 13 ) UNIQUE NOT NULL,
   password VARCHAR ( 64 ) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_users_phone_number ON users(phone_number);
 
 CREATE TABLE login_histories (
   id serial PRIMARY KEY,
-  user_id serial NOT NULL,
-  counter int NOT NULL DEFAULT 0,
+  users_id serial NOT NULL,
+  counter int NOT NULL DEFAULT 0
 );
 
+CREATE INDEX idx_login_histories_users_id ON login_histories(users_id);

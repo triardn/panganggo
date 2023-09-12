@@ -9,4 +9,5 @@ import "context"
 type RepositoryInterface interface {
 	GetTestById(ctx context.Context, input GetTestByIdInput) (output GetTestByIdOutput, err error)
 	Register(ctx context.Context, input RegisterInput) (output RegisterOutput, err error)
+	GetUsersByPhoneNumber(ctx context.Context, userPhoneNumber string) (output GetUsersByPhoneNumberOutput, err error)
 }

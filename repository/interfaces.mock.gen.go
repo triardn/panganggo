@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockRepositoryInterface is a mock of RepositoryInterface interface.
@@ -47,4 +47,34 @@ func (m *MockRepositoryInterface) GetTestById(ctx context.Context, input GetTest
 func (mr *MockRepositoryInterfaceMockRecorder) GetTestById(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTestById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetTestById), ctx, input)
+}
+
+// GetUsersByPhoneNumber mocks base method.
+func (m *MockRepositoryInterface) GetUsersByPhoneNumber(ctx context.Context, userPhoneNumber string) (GetUsersByPhoneNumberOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersByPhoneNumber", ctx, userPhoneNumber)
+	ret0, _ := ret[0].(GetUsersByPhoneNumberOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersByPhoneNumber indicates an expected call of GetUsersByPhoneNumber.
+func (mr *MockRepositoryInterfaceMockRecorder) GetUsersByPhoneNumber(ctx, userPhoneNumber interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersByPhoneNumber", reflect.TypeOf((*MockRepositoryInterface)(nil).GetUsersByPhoneNumber), ctx, userPhoneNumber)
+}
+
+// Register mocks base method.
+func (m *MockRepositoryInterface) Register(ctx context.Context, input RegisterInput) (RegisterOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Register", ctx, input)
+	ret0, _ := ret[0].(RegisterOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Register indicates an expected call of Register.
+func (mr *MockRepositoryInterfaceMockRecorder) Register(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockRepositoryInterface)(nil).Register), ctx, input)
 }

@@ -18,6 +18,10 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
+const (
+	BearerAuthScopes = "bearerAuth.Scopes"
+)
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Message string `json:"message"`
@@ -66,7 +70,7 @@ type UpdateUserResponse struct {
 // UserDetailResponse defines model for UserDetailResponse.
 type UserDetailResponse struct {
 	FullName    string `json:"full_name"`
-	Id          int    `json:"id"`
+	Id          *int   `json:"id,omitempty"`
 	PhoneNumber string `json:"phone_number"`
 }
 
@@ -148,6 +152,8 @@ func (w *ServerInterfaceWrapper) Registration(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
 	var err error
 
+	ctx.Set(BearerAuthScopes, []string{"users:w"})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.UpdateUser(ctx)
 	return err
@@ -163,6 +169,8 @@ func (w *ServerInterfaceWrapper) GetUserDetailByID(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	ctx.Set(BearerAuthScopes, []string{"users:w"})
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetUserDetailByID(ctx, id)
@@ -208,19 +216,21 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"Yx8WaxEAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
