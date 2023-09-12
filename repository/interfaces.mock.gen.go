@@ -34,6 +34,21 @@ func (m *MockRepositoryInterface) EXPECT() *MockRepositoryInterfaceMockRecorder 
 	return m.recorder
 }
 
+// CheckIfPhoneNumberExist mocks base method.
+func (m *MockRepositoryInterface) CheckIfPhoneNumberExist(ctx context.Context, input string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckIfPhoneNumberExist", ctx, input)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckIfPhoneNumberExist indicates an expected call of CheckIfPhoneNumberExist.
+func (mr *MockRepositoryInterfaceMockRecorder) CheckIfPhoneNumberExist(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIfPhoneNumberExist", reflect.TypeOf((*MockRepositoryInterface)(nil).CheckIfPhoneNumberExist), ctx, input)
+}
+
 // GetTestById mocks base method.
 func (m *MockRepositoryInterface) GetTestById(ctx context.Context, input GetTestByIdInput) (GetTestByIdOutput, error) {
 	m.ctrl.T.Helper()
@@ -91,4 +106,19 @@ func (m *MockRepositoryInterface) UpdateLoginCounter(ctx context.Context, input 
 func (mr *MockRepositoryInterfaceMockRecorder) UpdateLoginCounter(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLoginCounter", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateLoginCounter), ctx, input)
+}
+
+// UpdateProfile mocks base method.
+func (m *MockRepositoryInterface) UpdateProfile(ctx context.Context, input UpdateProfileInput) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProfile", ctx, input)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProfile indicates an expected call of UpdateProfile.
+func (mr *MockRepositoryInterfaceMockRecorder) UpdateProfile(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProfile", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateProfile), ctx, input)
 }
