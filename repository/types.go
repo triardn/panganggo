@@ -18,9 +18,15 @@ type RegisterOutput struct {
 }
 
 type GetUsersByPhoneNumberOutput struct {
-	ID          uint64    `json:"id"`
+	ID          int       `json:"id"`
 	FullName    string    `json:"full_name"`
 	PhoneNumber string    `json:"phone_number"`
 	Password    string    `json:"password"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+
+type LoginHistoriesModel struct {
+	ID      int `json:"id"`
+	UsersID int `json:"users_id"`
+	Counter int `json:"counter"`
 }

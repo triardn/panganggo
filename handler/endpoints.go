@@ -53,6 +53,11 @@ func (s *Server) Login(ctx echo.Context) error {
 	}
 
 	// increase login counter
+	err = s.Repository.UpdateLoginCounter(ctx.Request().Context(), int(users.ID))
+	if err != nil {
+		// TODO: add log
+		fmt.Println(err)
+	}
 
 	return ctx.JSON(http.StatusOK, generated.LoginResponse{Id: int(users.ID), Token: token})
 }

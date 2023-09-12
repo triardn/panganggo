@@ -9,14 +9,14 @@ import (
 )
 
 type JWTCustomClaims struct {
-	ID          uint64 `json:"id"`
+	ID          int    `json:"id"`
 	FullName    string `json:"full_name"`
 	PhoneNumber string `json:"phone_number"`
 	jwt.RegisteredClaims
 }
 
 type UserData struct {
-	ID          uint64
+	ID          int
 	FullName    string
 	PhoneNumber string
 }
@@ -84,7 +84,7 @@ func (j JWT) ValidateToken(token string) (interface{}, error) {
 	}
 
 	data := UserData{
-		ID:          uint64(claims["id"].(float64)),
+		ID:          int(claims["id"].(float64)),
 		FullName:    claims["full_name"].(string),
 		PhoneNumber: claims["phone_number"].(string),
 	}
