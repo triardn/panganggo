@@ -8,6 +8,8 @@ build/main: cmd/main.go generated
 
 clean:
 	rm -rf generated
+	rm -rf cert
+	rm -rf vendor
 
 init: generate
 	go mod tidy
@@ -32,6 +34,7 @@ $(INTERFACES_GEN_GO_FILES): %.mock.gen.go: %.go
 	mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
 
 cert:
-	mkdir cert
+	@echo "Generating certs..."
+	mkdir cert || true
 	openssl genrsa -out cert/id_rsa 4096
 	openssl rsa -in cert/id_rsa -pubout -out cert/id_rsa.pub
