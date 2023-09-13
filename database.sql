@@ -23,3 +23,7 @@ CREATE TABLE login_histories (
 );
 
 CREATE INDEX idx_login_histories_users_id ON login_histories(users_id);
+
+-- password narutoadalahhokage
+INSERT INTO users(full_name, phone_number, password)
+VALUES('Warga Konoha', '+628123456789', '$2a$04$51FdsMsF1NCHjDP0VjApzO6o0Z.1Baf1nD5ua7CTO2Pmb0rTi2gs6') 
