@@ -11,8 +11,7 @@ CREATE TABLE users (
   id serial PRIMARY KEY,
   full_name VARCHAR ( 60 ) NOT NULL,
   phone_number VARCHAR ( 13 ) UNIQUE NOT NULL,
-  password VARCHAR ( 64 ) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  password VARCHAR ( 64 ) NOT NULL
 );
 
 CREATE INDEX idx_users_phone_number ON users(phone_number);

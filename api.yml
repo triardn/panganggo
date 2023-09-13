@@ -17,29 +17,6 @@ info:
 servers:
   - url: http://localhost
 paths:
-  /hello:
-    get:
-      summary: This is just a test endpoint to get you started. Please delete this endpoint.
-      operationId: hello
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Test return
-          content:
-            application/json:    
-              schema:
-                $ref: "#/components/schemas/HelloResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
   /registration:
     post:
       summary: User Registration Endpoint.
@@ -170,13 +147,6 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
-    HelloResponse:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
     ErrorResponse:
       type: object
       required:

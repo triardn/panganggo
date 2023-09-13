@@ -1,8 +1,6 @@
 // This file contains types that are used in the repository layer.
 package repository
 
-import "time"
-
 type GetTestByIdInput struct {
 	Id string
 }
@@ -22,11 +20,10 @@ type RegisterOutput struct {
 }
 
 type GetUsersByPhoneNumberOutput struct {
-	ID          int       `json:"id"`
-	FullName    string    `json:"full_name"`
-	PhoneNumber string    `json:"phone_number"`
-	Password    string    `json:"password"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          int    `json:"id"`
+	FullName    string `json:"full_name"`
+	PhoneNumber string `json:"phone_number"`
+	Password    string `json:"password"`
 }
 
 type LoginHistoriesModel struct {

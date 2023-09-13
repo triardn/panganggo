@@ -33,11 +33,6 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-// HelloResponse defines model for HelloResponse.
-type HelloResponse struct {
-	Message string `json:"message"`
-}
-
 // LoginRequest defines model for LoginRequest.
 type LoginRequest struct {
 	Password    string `json:"password"`
@@ -80,11 +75,6 @@ type UserDetailResponse struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-// HelloParams defines parameters for Hello.
-type HelloParams struct {
-	Id int `form:"id" json:"id"`
-}
-
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = LoginRequest
 
@@ -96,9 +86,6 @@ type UpdateProfileJSONRequestBody = UpdateProfileRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// This is just a test endpoint to get you started. Please delete this endpoint.
-	// (GET /hello)
-	Hello(ctx echo.Context, params HelloParams) error
 	// Login endpoint.
 	// (POST /login)
 	Login(ctx echo.Context) error
@@ -116,24 +103,6 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
-}
-
-// Hello converts echo context to params.
-func (w *ServerInterfaceWrapper) Hello(ctx echo.Context) error {
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params HelloParams
-	// ------------- Required query parameter "id" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "id", ctx.QueryParams(), &params.Id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Hello(ctx, params)
-	return err
 }
 
 // Login converts echo context to params.
@@ -211,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/hello", wrapper.Hello)
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/registration", wrapper.Registration)
 	router.PUT(baseURL+"/users", wrapper.UpdateProfile)
@@ -222,21 +190,20 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"/wvEW9rnDwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

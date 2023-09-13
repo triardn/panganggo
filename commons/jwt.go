@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	gojwt "github.com/golang-jwt/jwt/v5"
 )
 
 type JWTCustomClaims struct {
 	ID          int    `json:"id"`
 	FullName    string `json:"full_name"`
 	PhoneNumber string `json:"phone_number"`
-	jwt.RegisteredClaims
+	gojwt.RegisteredClaims
 }
 
 type UserData struct {
@@ -21,20 +21,25 @@ type UserData struct {
 	PhoneNumber string
 }
 
-type JWT struct {
+type JWT interface {
+	CreateToken(ctx context.Context, data UserData) (token string, err error)
+	ValidateToken(token string) (interface{}, error)
+}
+
+type jwt struct {
 	privateKey []byte
 	publicKey  []byte
 }
 
 func NewJWT(privateKey []byte, publicKey []byte) JWT {
-	return JWT{
+	return &jwt{
 		privateKey: privateKey,
 		publicKey:  publicKey,
 	}
 }
 
-func (j JWT) CreateToken(ctx context.Context, data UserData) (token string, err error) {
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(j.privateKey)
+func (j *jwt) CreateToken(ctx context.Context, data UserData) (token string, err error) {
+	key, err := gojwt.ParseRSAPrivateKeyFromPEM(j.privateKey)
 	if err != nil {
 		return "", fmt.Errorf("create: parse key: %w", err)
 	}
@@ -44,13 +49,13 @@ func (j JWT) CreateToken(ctx context.Context, data UserData) (token string, err 
 		data.ID,
 		data.FullName,
 		data.PhoneNumber,
-		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		gojwt.RegisteredClaims{
+			ExpiresAt: gojwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
 		},
 	}
 
 	// Create token with claims
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	jwtToken := gojwt.NewWithClaims(gojwt.SigningMethodRS256, claims)
 
 	// Generate encoded token and send it as response.
 	token, err = jwtToken.SignedString(key)
@@ -61,14 +66,14 @@ func (j JWT) CreateToken(ctx context.Context, data UserData) (token string, err 
 	return
 }
 
-func (j JWT) ValidateToken(token string) (interface{}, error) {
-	key, err := jwt.ParseRSAPublicKeyFromPEM(j.publicKey)
+func (j *jwt) ValidateToken(token string) (interface{}, error) {
+	key, err := gojwt.ParseRSAPublicKeyFromPEM(j.publicKey)
 	if err != nil {
 		return "", fmt.Errorf("validate: parse key: %w", err)
 	}
 
-	tok, err := jwt.Parse(token, func(jwtToken *jwt.Token) (interface{}, error) {
-		if _, ok := jwtToken.Method.(*jwt.SigningMethodRSA); !ok {
+	tok, err := gojwt.Parse(token, func(jwtToken *gojwt.Token) (interface{}, error) {
+		if _, ok := jwtToken.Method.(*gojwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected method: %s", jwtToken.Header["alg"])
 		}
 
@@ -78,7 +83,7 @@ func (j JWT) ValidateToken(token string) (interface{}, error) {
 		return nil, fmt.Errorf("validate: %w", err)
 	}
 
-	claims, ok := tok.Claims.(jwt.MapClaims)
+	claims, ok := tok.Claims.(gojwt.MapClaims)
 	if !ok || !tok.Valid {
 		return nil, fmt.Errorf("validate: invalid")
 	}
