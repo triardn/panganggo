@@ -20,7 +20,7 @@ func TestRepository_GetUsersByPhoneNumberSuccess(t *testing.T) {
 		Db: db,
 	}
 
-	mock.ExpectQuery("SELECT * FROM users WHERE phone_number = ?").WithArgs("628123456789").WillReturnRows(sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password"}).AddRow(1, "Kabuki", "628123456789", "$2a$04$51FdsMsF1NCHjDP0VjApzO6o0Z.1Baf1nD5ua7CTO2Pmb0rTi2gs6"))
+	mock.ExpectQuery("SELECT * FROM users WHERE phone_number = $1").WithArgs("628123456789").WillReturnRows(sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password"}).AddRow(1, "Kabuki", "628123456789", "$2a$04$51FdsMsF1NCHjDP0VjApzO6o0Z.1Baf1nD5ua7CTO2Pmb0rTi2gs6"))
 
 	_, err = repo.GetUsersByPhoneNumber(context.TODO(), "628123456789")
 	if err != nil {
@@ -39,7 +39,7 @@ func TestRepository_GetUsersByPhoneNumberFailed(t *testing.T) {
 		Db: db,
 	}
 
-	mock.ExpectQuery("SELECT * FROM users WHERE phone_number = ?").WithArgs("628123456789").WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("SELECT * FROM users WHERE phone_number = $1").WithArgs("628123456789").WillReturnError(sql.ErrConnDone)
 
 	_, err = repo.GetUsersByPhoneNumber(context.TODO(), "628123456789")
 	if err == nil {
@@ -58,7 +58,7 @@ func TestRepository_CheckIfPhoneNumberExistFailedGetData(t *testing.T) {
 		Db: db,
 	}
 
-	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = ?").WithArgs("628123456789").WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = $1").WithArgs("628123456789").WillReturnError(sql.ErrConnDone)
 
 	_, err = repo.CheckIfPhoneNumberExist(context.TODO(), "628123456789")
 	if err == nil {
@@ -77,7 +77,7 @@ func TestRepository_CheckIfPhoneNumberExistSuccessIsNotExist(t *testing.T) {
 		Db: db,
 	}
 
-	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = ?").WithArgs("628123456789").WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = $1").WithArgs("628123456789").WillReturnError(sql.ErrNoRows)
 
 	_, err = repo.CheckIfPhoneNumberExist(context.TODO(), "628123456789")
 	if err != nil {
@@ -96,7 +96,7 @@ func TestRepository_CheckIfPhoneNumberExistSuccessIsExist(t *testing.T) {
 		Db: db,
 	}
 
-	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = ?").WithArgs("628123456789").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	mock.ExpectQuery("SELECT id FROM users WHERE phone_number = $1").WithArgs("628123456789").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	_, err = repo.CheckIfPhoneNumberExist(context.TODO(), "628123456789")
 	if err != nil {
@@ -121,7 +121,7 @@ func TestRepository_RegisterFailed(t *testing.T) {
 		Password:    "$2a$04$lo.0ExyOiqlFFarEuQz35uExyLLaKZcPECT7zLbtgFzHyCNs0KP8.",
 	}
 
-	mock.ExpectQuery("INSERT INTO users(full_name, phone_number, password) VALUES (?, ?, ?) RETURNING id").WithArgs(dataTest.FullName, dataTest.PhoneNumber, dataTest.Password).WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("INSERT INTO users(full_name, phone_number, password) VALUES ($1, $2, $3) RETURNING id").WithArgs(dataTest.FullName, dataTest.PhoneNumber, dataTest.Password).WillReturnError(sql.ErrConnDone)
 
 	_, err = repo.Register(context.TODO(), dataTest)
 	if err == nil {
@@ -146,7 +146,7 @@ func TestRepository_RegisterSuccess(t *testing.T) {
 		Password:    "$2a$04$lo.0ExyOiqlFFarEuQz35uExyLLaKZcPECT7zLbtgFzHyCNs0KP8.",
 	}
 
-	mock.ExpectQuery("INSERT INTO users(full_name, phone_number, password) VALUES (?, ?, ?) RETURNING id").WithArgs(dataTest.FullName, dataTest.PhoneNumber, dataTest.Password).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	mock.ExpectQuery("INSERT INTO users(full_name, phone_number, password) VALUES ($1, $2, $3) RETURNING id").WithArgs(dataTest.FullName, dataTest.PhoneNumber, dataTest.Password).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	_, err = repo.Register(context.TODO(), dataTest)
 	if err != nil {
@@ -171,9 +171,7 @@ func TestRepository_UpdateLoginCounterErrorGetData(t *testing.T) {
 		Counter: 9,
 	}
 
-	// mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
-
-	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = $1").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrConnDone)
 
 	err = repo.UpdateLoginCounter(context.TODO(), dataTest.UsersID)
 	if err == nil {
@@ -198,10 +196,8 @@ func TestRepository_UpdateLoginCounterErrorInsertNewData(t *testing.T) {
 		Counter: 9,
 	}
 
-	// mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
-
-	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
-	mock.ExpectQuery("INSERT INTO login_histories(users_id, counter) VALUES(?, 1)").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = $1").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery("INSERT INTO login_histories(users_id, counter) VALUES($1, 1)").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
 
 	err = repo.UpdateLoginCounter(context.TODO(), dataTest.UsersID)
 	if err == nil {
@@ -226,8 +222,8 @@ func TestRepository_UpdateLoginCounterSuccessInsertNewData(t *testing.T) {
 		Counter: 9,
 	}
 
-	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
-	mock.ExpectQuery("INSERT INTO login_histories(users_id, counter) VALUES(?, 1)").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(dataTest.ID))
+	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = $1").WithArgs(dataTest.UsersID).WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery("INSERT INTO login_histories(users_id, counter) VALUES($1, 1)").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(dataTest.ID))
 
 	err = repo.UpdateLoginCounter(context.TODO(), dataTest.UsersID)
 	if err != nil {
@@ -252,8 +248,8 @@ func TestRepository_UpdateLoginCounterErrorUpdateData(t *testing.T) {
 		Counter: 9,
 	}
 
-	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
-	mock.ExpectQuery("UPDATE login_histories SET counter = ? WHERE users_id = ?").WithArgs(dataTest.Counter, dataTest.UsersID).WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = $1").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
+	mock.ExpectQuery("UPDATE login_histories SET counter = $1 WHERE users_id = $2").WithArgs(dataTest.Counter, dataTest.UsersID).WillReturnError(sql.ErrConnDone)
 
 	err = repo.UpdateLoginCounter(context.TODO(), dataTest.UsersID)
 	if err == nil {
@@ -278,8 +274,8 @@ func TestRepository_UpdateLoginCounterSuccessUpdateData(t *testing.T) {
 		Counter: 9,
 	}
 
-	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = ?").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
-	mock.ExpectQuery("UPDATE login_histories SET counter = ? WHERE users_id = ?").WithArgs(dataTest.Counter+1, dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(dataTest.ID))
+	mock.ExpectQuery("SELECT * FROM login_histories WHERE users_id = $1").WithArgs(dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id", "users_id", "counter"}).AddRow(dataTest.ID, dataTest.UsersID, dataTest.Counter))
+	mock.ExpectQuery("UPDATE login_histories SET counter = $1 WHERE users_id = $2").WithArgs(dataTest.Counter+1, dataTest.UsersID).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(dataTest.ID))
 
 	err = repo.UpdateLoginCounter(context.TODO(), dataTest.UsersID)
 	if err != nil {

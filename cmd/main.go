@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/triardn/panganggo/commons"
@@ -45,14 +44,8 @@ func newServer() *handler.Server {
 		Dsn: dbDsn,
 	})
 
-	privateKey, err := os.ReadFile("cert/id_rsa")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	publicKey, err := os.ReadFile("cert/id_rsa.pub")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	privateKey := []byte(os.Getenv("ID_RSA"))
+	publicKey := []byte(os.Getenv("ID_RSA_PUB"))
 
 	newJWT := commons.NewJWT(privateKey, publicKey)
 

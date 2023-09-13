@@ -1,4 +1,4 @@
-.PHONY: clean all init generate generate_mocks generate_cert
+.PHONY: clean all init generate generate_mocks
 
 all: build/main
 
@@ -8,7 +8,6 @@ build/main: cmd/main.go generated
 
 clean:
 	rm -rf generated
-	rm -rf cert
 	rm -rf vendor
 
 init: generate
@@ -18,7 +17,7 @@ init: generate
 test:
 	go test -short -coverprofile coverage.out -v ./...
 
-generate: generated generate_mocks generate_cert
+generate: generated generate_mocks
 
 generated: api.yml
 	@echo "Generating files..."
@@ -32,9 +31,3 @@ generate_mocks: $(INTERFACES_GEN_GO_FILES)
 $(INTERFACES_GEN_GO_FILES): %.mock.gen.go: %.go
 	@echo "Generating mocks $@ for $<"
 	mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
-
-generate_cert:
-	@echo "Generating certs..."
-	mkdir cert || true
-	openssl genrsa -out cert/id_rsa 4096
-	openssl rsa -in cert/id_rsa -pubout -out cert/id_rsa.pub

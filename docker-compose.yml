@@ -5,6 +5,74 @@ services:
       - "8080:1323"
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/database?sslmode=disable
+      ID_RSA: |
+        -----BEGIN PRIVATE KEY-----
+        MIIJQgIBADANBgkqhkiG9w0BAQEFAASCCSwwggkoAgEAAoICAQD0Ep2orOxRja+2
+        9AAgiV3ekKod38UZtCYg5s6v75QjSZZiX3BVuR/0FV2G5BLIhEWUfzoHNjckGBkO
+        kQbnujyxsF2MpiGUgU4NmY+St+Widm24b3rzXyh3nSNyK7iUP8mZXpi/dZLHBncG
+        gyWeQwEb0uC7e9HCiAPBxx1CEn/BKzVLcS0UwK+c8m3j6OgLdrE0wn2nakV8BOKM
+        j8/PqWg7foD5oynGm0mw2TM0LKbnJ1sfHbP2ua23YsWTECKKkh98qm3Cck4x6xEI
+        2DQ+HZrRFDeofZIBab7r/SVz17EYn3k82fNJHsVPlAKQrXbwuA3CAyq8OtCFdL9y
+        o7ZbSfXMi6xeik0QmLVXnF2uvwa1D3XKwsfJ4+O00nPYz34G2cMstx1nFS3O6Z7R
+        emlNemRYELgNSncbqdGDW0y5WNpl3oUJVvLymGPEvoo/XlMpuMaRl5/rMCzG4gmb
+        medmCF7AY617yjRZZbHiFDcVg3lNvyjE1D03nfehohSQDd/FQtNiA8a5uogjnxcq
+        k2GPQV6qPmZ8s+BnFR2+aSfzr/iSo4GWF/FE5XsdhUffunTADj0gU1EsFHs6SXUC
+        XfGwt+xiBybViVKE13kotIjdK05p9u/LlCOFxEgvuqNHE09CmFU25s3P1Mih2fxM
+        +jTjZ21NJkTLkb+cGNGnvTDfltAOxQIDAQABAoICABJLjO7WW3Z3gOrdWl8V/OfQ
+        fzfzDJKzKsJ/mpGci0Wj3/ZqwgBi+o6wxUx1ryTBqXeKm95rhXGartIlM9fN4XvO
+        RQzkbRL1KFUjpBvy1e86IlpXXOd+RAnHSR9nQJQ4PdPVv+xmE0UA6o4d6YV171DX
+        G0piayRCTsnJM5u+yD3CD+IiTydFlERW9b7GOBKX6IuUYpfYgvHbaeHwa7rcr3f6
+        MQ/FV73P6ROtDEYGbNJZ5F4uO02suGVNLZMq+/PYJS0Sl1yiddMPFD1N+4iGbpLq
+        iYuDMh0SAKIu3Q5UZi160rspeS+Lc23WIeUXY5mCqmFXHG50mCnQyQL+W453Oknf
+        2pm3w8kUUHSxuneo7OFKxVRTslvZcU7gLkKwQPbgHp7Ezc4LQrIFzYlNXPCQsP3/
+        caWB0wxv6ilZn/eHBEDeuRx7ux6ObRoUhAoRnhACckWcKAdzrctpIgm9p4xOusun
+        /Y9lKwUSqg3VWswAte0Du+QkVKw66e3j4ZGsSUJByZ8+/szX6jkmAXhL7eqm2Q+5
+        YacWbXU00nYwf7BfUv/aprW4j8O2JZMH5TYl2iU79TUe3FY1LRo0r4WnUt6u7TYk
+        9MA0B4Wt5YoeScVKukoi7LfscaASCdqvKqyvkcud5blOOKSBYIVRFV9XG5/QnwTN
+        ko8xqbFu8/CV+Q8PyPJ3AoIBAQD8OOktG7BQ1l9HQwlYWK16aERlKQLw2x4Vc4Z+
+        JIY3ASzZVwz5zFZ168SRTWmHmPnAerpWCywOjP+USrbrB65TPMR30PfPfDxyOFte
+        lwm4YYpq1dpjdXk9IzD23A169g4Br7+aTuwDZ5U0DtoiMBJA3U2CEAX1kb5x43LK
+        5dOpjgM3MEYxPFVp5ccoUI69ls4DwmyWXz5TA99CxjTJ5K6vFjXXvXZOjYZWBeUU
+        pPe5q2KsekSmkqGQB3zUNRC7dtdjnb5TTlP/Fk1xQOJAENUbTPTRHb2+yD/Egf0X
+        mvMk2mrMdXmsrJ5QPHhH7yUzVTJkZqM2syxxlGH7KGv0SNLnAoIBAQD3unUO8lQo
+        1iL5+leug5liNhbEPrt+vM0reLT9s7OYzf21JlL21nkhJqfEOiUo4jWrYDcuPKgj
+        Ckq51UNwhK9qc+bsBmxpnAWYXv4L+W2YhVWiHLWlH8h5zl+a7QTLQq/kfokoWCpO
+        ZyT2baBfY0AmJv6Dj/FmNR7xyjdnP/Qzr11BePAz9ZU8y4u7aXU0qeRjN2k/oq+w
+        AmuyrG3JKYie5n9E8gBccY4KYDpTQEL/G9Vb7kXNrJiG5LXGk4jH6OM/GF08ILYS
+        3tR/SzukXTHILgmxWqUZElw/vttw57WHQ7RRELkQbFWVOuxbMfhzre4rtuCcqdXW
+        VEB5Hu+rYwdzAoIBAQD6xH6ZOalQhgMO8AivjONWC6rMxTzGSaUcgNLcQeYrdACq
+        SlF9XvsrnPC/4q6kgaT3CU6QU+VGxkspnitFfEqHOajA08Q+x2+1xHCbmCGy70/W
+        rq7GKjsTXRTGq7y/XzpH1Pv0KLmhHPCMZKPeT9smIKF6SgISyQgHZbNxJZYPQ0HR
+        Mi7nruvhMPKVE5sHxpMny7t4ulNV6EimtDgx7yr6q2N3D0k8CpvglVXQ87/VGyAt
+        CheNYcY+VCN5PRVYvWyi/2gGnZ8HxJ3Ul0Ubm2C2Fwpli2Nm9uPntbH0MTvDjWGX
+        zMjftHRmo+iW5J8g7Xj/t8hYj0YF2xibxPGoXGtLAoIBAFeKXUlN2u2fVjbN/2Qc
+        /vvUr1Dj9i/AGiSNgC/S69lImaoFA/ZULfPIDCrsfSsoXNzVoEpHhwby4RswQKen
+        S7GriWPIlVDwoI2Kq+2hU9g87djemlXimF5qziAaN8J4K13sVR2boj+YdVhbvvtW
+        QFn7F594I08B4JCC6/chg3MsOiEj0oYZ94XHS/aLOq7Ehn+FGj0xiTICePpnslgO
+        xEeankjH19bTDeWewZ2frM0nkcrttV8L6c5pTc8BXal/I6atPm08Bfs/IQpmlInt
+        oOTjV+uDY6orccvY7wTD7MMC6tpmtW8XSVr1uoYzb1+5i9uIwXC7F2So2yuyAfGn
+        if8CggEAA44rnzURyMrUTi5trtriGtYOfnAI/PzZzkUuwHRhNxE1p3Qecddlokzk
+        lUmd/nlCn/kaEn+RjgRgTk2RE20c0HeORqnqhKMtuPVMUD0000e4qt/tvCw7TwPA
+        WyADWZYBSoBVGkshKhwITNcP4PVET5JFx7/m4v8SFaxkuU2dBiYaPDCo8yHsBqi+
+        Z52+XmMZNCzCqJYKpLpoYS5fwdjxBnNv6+bzS3jt0ByIgL+BIlv8Da0HwRMAgngY
+        MVPcOxRi5IlE+vh5vKZ7zwWufxbAHa8TdaV32Ze3nniHsePx1sYU6dDMUac2/Mc3
+        0oR0+JgHFuNtCikDjw/ECOSmnyHeQg==
+        -----END PRIVATE KEY-----
+      ID_RSA_PUB: |
+        -----BEGIN PUBLIC KEY-----
+        MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9BKdqKzsUY2vtvQAIIld
+        3pCqHd/FGbQmIObOr++UI0mWYl9wVbkf9BVdhuQSyIRFlH86BzY3JBgZDpEG57o8
+        sbBdjKYhlIFODZmPkrflonZtuG96818od50jciu4lD/JmV6Yv3WSxwZ3BoMlnkMB
+        G9Lgu3vRwogDwccdQhJ/wSs1S3EtFMCvnPJt4+joC3axNMJ9p2pFfATijI/Pz6lo
+        O36A+aMpxptJsNkzNCym5ydbHx2z9rmtt2LFkxAiipIffKptwnJOMesRCNg0Ph2a
+        0RQ3qH2SAWm+6/0lc9exGJ95PNnzSR7FT5QCkK128LgNwgMqvDrQhXS/cqO2W0n1
+        zIusXopNEJi1V5xdrr8GtQ91ysLHyePjtNJz2M9+BtnDLLcdZxUtzume0XppTXpk
+        WBC4DUp3G6nRg1tMuVjaZd6FCVby8phjxL6KP15TKbjGkZef6zAsxuIJm5nnZghe
+        wGOte8o0WWWx4hQ3FYN5Tb8oxNQ9N533oaIUkA3fxULTYgPGubqII58XKpNhj0Fe
+        qj5mfLPgZxUdvmkn86/4kqOBlhfxROV7HYVH37p0wA49IFNRLBR7Okl1Al3xsLfs
+        Ygcm1YlShNd5KLSI3StOafbvy5QjhcRIL7qjRxNPQphVNubNz9TIodn8TPo042dt
+        TSZEy5G/nBjRp70w35bQDsUCAwEAAQ==
+        -----END PUBLIC KEY-----
     depends_on:
       db:
         condition: service_healthy
