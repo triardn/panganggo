@@ -21,7 +21,36 @@ func (s *Server) Hello(ctx echo.Context, params generated.HelloParams) error {
 }
 
 func (s *Server) Registration(ctx echo.Context) error {
-	return nil
+	registerRequest := generated.RegisterRequest{}
+	if err := ctx.Bind(&registerRequest); err != nil {
+		return err
+	}
+
+	// validate request
+	errors := validateRequest(registerRequest)
+	if len(errors) > 0 {
+		resp := generated.BadRequestResponse{
+			Message: "Gagal melakukan registrasi. Periksa detail berikut:",
+			Detail:  errors,
+		}
+
+		return ctx.JSON(http.StatusBadRequest, resp)
+	}
+
+	// create new user
+	payload := repository.RegisterInput{
+		FullName:    registerRequest.FullName,
+		PhoneNumber: registerRequest.PhoneNumber,
+		Password:    commons.HashAndSalt([]byte(registerRequest.Password)),
+	}
+
+	data, err := s.Repository.Register(ctx.Request().Context(), payload)
+	if err != nil {
+		// TODO: add log
+		return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: "Terjadi kesalahan pada server. Silakan coba lagi."})
+	}
+
+	return ctx.JSON(http.StatusOK, data)
 }
 
 func (s *Server) Login(ctx echo.Context) error {
@@ -134,6 +163,95 @@ func validateToken(ctx echo.Context, jwt commons.JWT) (isValid bool, data common
 	data.PhoneNumber = tempData.(commons.UserData).PhoneNumber
 
 	isValid = true
+
+	return
+}
+
+type ValidationError struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
+}
+
+func validateFullName(fullName string) (isValid bool, errors ValidationError) {
+	if len(fullName) < 3 || len(fullName) > 60 {
+		errors.Field = "full_name"
+		errors.Message = "karakter fullname minimal 3 karakter dan maksimal 60 karakter."
+
+		return
+	}
+
+	return true, errors
+}
+
+func validatePassword(password string) (isValid bool, errors ValidationError) {
+	isValid = commons.ValidatePassword(password)
+	if !isValid {
+		errors.Field = "password"
+		errors.Message = "password tidak sesuai dengan ketentuan"
+
+		return
+	}
+
+	return true, errors
+}
+
+func validatePhoneNumber(phoneNumber string) (isValid bool, errors ValidationError) {
+	var message []string
+	if len(phoneNumber) < 10 || len(phoneNumber) > 13 {
+		message = append(message, "nomor telpon minimal 10 karakter dan maksimal 13 karakter")
+	}
+
+	if len(phoneNumber) >= 10 {
+		prefix := phoneNumber[0:3]
+		if prefix != "+62" {
+			message = append(message, "nomor telpon harus diawali dengan +62")
+		}
+	}
+
+	// any validation errors
+	if len(message) > 0 {
+		errors.Field = "phone_number"
+		if len(message) > 1 {
+			errors.Message = strings.Join(message, " dan")
+		} else {
+			errors.Message = message[0]
+		}
+
+		return
+	}
+
+	return true, errors
+}
+
+func validateRequest(input generated.RegisterRequest) (errors []string) {
+	var validationErrors []ValidationError
+
+	// validate fullname
+	isValid, error := validateFullName(input.FullName)
+	if !isValid {
+		validationErrors = append(validationErrors, error)
+	}
+
+	// validate phone number
+	isValid, error = validatePhoneNumber(input.PhoneNumber)
+	if !isValid {
+		validationErrors = append(validationErrors, error)
+	} else {
+		// check if phone number is already used
+	}
+
+	// validate password
+	isValid, error = validatePassword(input.Password)
+	if !isValid {
+		validationErrors = append(validationErrors, error)
+	}
+
+	// iterate all errors
+	if len(validationErrors) > 0 {
+		for _, data := range validationErrors {
+			errors = append(errors, fmt.Sprintf("%s: %s", data.Field, data.Message))
+		}
+	}
 
 	return
 }

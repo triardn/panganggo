@@ -15,6 +15,15 @@ func (r *Repository) GetTestById(ctx context.Context, input GetTestByIdInput) (o
 }
 
 func (r *Repository) Register(ctx context.Context, input RegisterInput) (output RegisterOutput, err error) {
+	sqlStatement := `
+		INSERT INTO users(full_name, phone_number, password)
+		VALUES ($1, $2, $3)
+		RETURNING id`
+	err = r.Db.QueryRowContext(ctx, sqlStatement, input.FullName, input.PhoneNumber, input.Password).Scan(&output.ID)
+	if err != nil {
+		return
+	}
+
 	return
 }
 

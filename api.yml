@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/BadRequestResponse"
   /login:
     post:
       summary: Login endpoint.
@@ -250,6 +250,18 @@ components:
       properties:
         message:
           type: string
+    BadRequestResponse:
+      type: object
+      required:
+        - message
+        - detail
+      properties:
+        message:
+          type: string
+        detail:
+          type: array
+          items:
+            type: string
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
       type: http
