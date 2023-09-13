@@ -2,11 +2,13 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	"github.com/triardn/panganggo/commons"
 	"github.com/triardn/panganggo/generated"
 	"github.com/triardn/panganggo/repository"
@@ -37,6 +39,17 @@ func (s *Server) Registration(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, resp)
 	}
 
+	// check if phone number is already in used
+	isExist, err := s.Repository.CheckIfPhoneNumberExist(ctx.Request().Context(), registerRequest.PhoneNumber)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to check if phone number exist")
+		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Terjadi kesalahan pada sistem. Silakan coba lagi."})
+	}
+
+	if isExist {
+		return ctx.JSON(http.StatusConflict, generated.ErrorResponse{Message: "Conflict."})
+	}
+
 	// create new user
 	payload := repository.RegisterInput{
 		FullName:    registerRequest.FullName,
@@ -46,7 +59,7 @@ func (s *Server) Registration(ctx echo.Context) error {
 
 	data, err := s.Repository.Register(ctx.Request().Context(), payload)
 	if err != nil {
-		// TODO: add log
+		log.Error().Err(err).Msg("Failed to register user")
 		return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: "Terjadi kesalahan pada server. Silakan coba lagi."})
 	}
 
@@ -66,7 +79,7 @@ func (s *Server) Login(ctx echo.Context) error {
 			return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: "User tidak ditemukan."})
 		}
 
-		// TODO: add log
+		log.Error().Err(err).Msg("Failed to get user by phone number")
 		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Gagal mendapatkan informasi user dari server. Silakan coba lagi."})
 	}
 
@@ -78,15 +91,14 @@ func (s *Server) Login(ctx echo.Context) error {
 	// compose JWT token
 	token, err := s.JWT.CreateToken(ctx.Request().Context(), commons.UserData{ID: users.ID, FullName: users.FullName, PhoneNumber: users.PhoneNumber})
 	if err != nil {
-		// TODO: add log
+		log.Error().Err(err).Msg("Failed to create token")
 		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Terjadi kesalahan pada sistem. Silakan coba lagi."})
 	}
 
 	// increase login counter
 	err = s.Repository.UpdateLoginCounter(ctx.Request().Context(), int(users.ID))
 	if err != nil {
-		// TODO: add log
-		fmt.Println(err)
+		log.Error().Err(err).Msg("Failed to update login counter")
 	}
 
 	return ctx.JSON(http.StatusOK, generated.LoginResponse{Id: int(users.ID), Token: token})
@@ -112,19 +124,6 @@ func (s *Server) UpdateProfile(ctx echo.Context) error {
 		return err
 	}
 
-	// validate phone number
-
-	// check if phone number is exist
-	isExist, err := s.Repository.CheckIfPhoneNumberExist(ctx.Request().Context(), *updateProfileRequest.PhoneNumber)
-	if err != nil {
-		// TODO: add log
-		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Terjadi kesalahan pada sistem. Silakan coba lagi."})
-	}
-
-	if isExist {
-		return ctx.JSON(http.StatusConflict, generated.ErrorResponse{Message: "Conflict."})
-	}
-
 	// update profile
 	payload := repository.UpdateProfileInput{}
 
@@ -136,9 +135,29 @@ func (s *Server) UpdateProfile(ctx echo.Context) error {
 		payload.PhoneNumber = *updateProfileRequest.PhoneNumber
 	}
 
-	_, err = s.Repository.UpdateProfile(ctx.Request().Context(), payload)
+	// validate phone number
+	if payload.PhoneNumber != "" {
+		isValid, errMsg := validatePhoneNumber(payload.PhoneNumber)
+		if !isValid {
+			log.Error().Err(errors.New(errMsg.Message)).Msg("Failed to check if phone number exist")
+			return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: fmt.Sprintf("%s: %s", errMsg.Field, errMsg.Message)})
+		}
+
+		// check if phone number is exist
+		isExist, err := s.Repository.CheckIfPhoneNumberExist(ctx.Request().Context(), *updateProfileRequest.PhoneNumber)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to check if phone number exist")
+			return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Terjadi kesalahan pada sistem. Silakan coba lagi."})
+		}
+
+		if isExist {
+			return ctx.JSON(http.StatusConflict, generated.ErrorResponse{Message: "Conflict."})
+		}
+	}
+
+	_, err := s.Repository.UpdateProfile(ctx.Request().Context(), payload)
 	if err != nil {
-		// TODO: add log
+		log.Error().Err(err).Msg("Failed to update profile")
 		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Gagal update profile. Silakan coba lagi."})
 	}
 
@@ -152,8 +171,7 @@ func validateToken(ctx echo.Context, jwt commons.JWT) (isValid bool, data common
 
 	tempData, err := jwt.ValidateToken(temp[1])
 	if err != nil {
-		// TODO: log error
-		fmt.Println(err)
+		log.Error().Err(err).Msg("Failed to validate token")
 		return
 	}
 

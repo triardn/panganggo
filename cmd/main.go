@@ -11,24 +11,29 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/rs/zerolog"
 )
 
 func main() {
 	e := echo.New()
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
+
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	logger := zerolog.New(os.Stdout)
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Msg("request")
+
+			return nil
+		},
 	}))
 
 	var server generated.ServerInterface = newServer()
-
-	// // Configure middleware with the custom claims type
-	// config := echojwt.Config{
-	// 	NewClaimsFunc: func(c echo.Context) jwt.Claims {
-	// 		return new(commons.JWTCustomClaims)
-	// 	},
-	// 	SigningKey: []byte("secret"),
-	// }
-	// e.Use(echojwt.WithConfig(config))
 
 	generated.RegisterHandlers(e, server)
 	e.Logger.Fatal(e.Start(":1323"))
