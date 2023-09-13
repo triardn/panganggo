@@ -1,4 +1,9 @@
-# Backend Engineering Interview Assignment (Golang)
+# Panganggo
+Panganggo in javanese is `Pengguna` (via Google Translate xD). This small service provide 4 endpoint related to `Pengguna`:
+- Login
+- Register
+- Get My Profile
+- Update Profile
 
 ## Requirements
 
