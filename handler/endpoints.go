@@ -131,7 +131,7 @@ func (s *Server) UpdateProfile(ctx echo.Context) error {
 	if payload.PhoneNumber != "" {
 		isValid, errMsg := validatePhoneNumber(payload.PhoneNumber)
 		if !isValid {
-			log.Error().Err(errors.New(errMsg.Message)).Msg("Failed to check if phone number exist")
+			log.Error().Err(errors.New(errMsg.Message)).Msg("phone number is not valid")
 			return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: fmt.Sprintf("%s: %s", errMsg.Field, errMsg.Message)})
 		}
 
@@ -144,6 +144,15 @@ func (s *Server) UpdateProfile(ctx echo.Context) error {
 
 		if isExist {
 			return ctx.JSON(http.StatusConflict, generated.ErrorResponse{Message: "Conflict."})
+		}
+	}
+
+	// validate full name
+	if payload.FullName != "" {
+		isValid, errMsg := validateFullName(payload.FullName)
+		if !isValid {
+			log.Error().Err(errors.New(errMsg.Message)).Msg("full name is not valid")
+			return ctx.JSON(http.StatusBadRequest, generated.ErrorResponse{Message: fmt.Sprintf("%s: %s", errMsg.Field, errMsg.Message)})
 		}
 	}
 
